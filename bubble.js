@@ -28,7 +28,6 @@ sortLoop = setInterval(() => {
     }
 
     if (unsorted === 0) {
-        console.log("hi")
         clearInterval(sortLoop)
     }
 }, delay)
