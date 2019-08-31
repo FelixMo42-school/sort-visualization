@@ -63,10 +63,10 @@ function draw() {
         rect(i * size, innerHeight, size, -data[i])
     }
 
-    fill("white")
+    fill("black")
     textSize(20)
-    text(`compare: ${compare}`, 10, innerHeight - 30)
-    text(`swap: ${swap}`, 10, innerHeight - 10)
+    text(`comparison: ${compare}`, 10,  40)
+    text(`changes: ${swap}`, 10, 20)
 }
 
 function windowResized() {

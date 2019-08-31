@@ -14,7 +14,6 @@ Array.prototype.shuffle = function() {
 
 let block = 0
 let blockSize = 2
-let pos = 0
 
 let leftPos = 0
 let rightPos = 0
@@ -37,9 +36,12 @@ sortLoop = setInterval(() => {
 
         rightPos++
         sorted++
+        swap += 1
     } else {
         leftPos++
     }
+
+    compare += 1
 
     if (rightPos >= blockSize / 2 || leftPos >= blockSize / 2) {
         leftPos = 0
@@ -99,10 +101,10 @@ function draw() {
         rect(i * size, innerHeight, size, -data[i])
     }
 
-    /*fill("black")
+    fill("black")
     textSize(20)
-    text(`blockSize: ${blockSize}`, 10, innerHeight - 30)
-    text(`block: ${block}`, 10, innerHeight - 10)*/
+    text(`comparison: ${compare}`, 10,  40)
+    text(`changes: ${swap}`, 10, 20)
 }
 
 function windowResized() {
