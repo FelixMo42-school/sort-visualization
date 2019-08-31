@@ -6,7 +6,6 @@ let compare = 0
 let swap = 0
 
 Array.prototype.shuffle = function() {
-    print(this)
     for (let i = this.length - 1, r  = Math.floor(Math.random() * i); i > 0; i--, r = Math.floor(Math.random() * i)) {
         [this[r], this[i]] = [this[i], this[r]]
     }
