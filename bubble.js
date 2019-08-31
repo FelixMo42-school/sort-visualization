@@ -1,6 +1,6 @@
 const data = []
-const num = 100
-const delay = 10
+const num = 64
+const delay = 100
 
 let pos = 0
 let unsorted = num
@@ -60,7 +60,7 @@ function draw() {
             fill("white")
         }
 
-        rect(i * size, 0, size, data[i])
+        rect(i * size, innerHeight, size, -data[i])
     }
 
     fill("white")

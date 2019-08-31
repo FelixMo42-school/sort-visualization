@@ -1,6 +1,6 @@
 const data = []
-const num = 8
-const delay = 1000
+const num = 64
+const delay = 100
 
 let compare = 0
 let swap = 0
@@ -18,59 +18,40 @@ let pos = 0
 
 let leftPos = 0
 let rightPos = 0
+
 let sorted = 0
-let leftSorted = blockSize / 2
-let rightSorted = blockSize / 2
+let done = 0
 
 function getIndex() {
     return block * blockSize + Math.floor(pos / 2) + (pos % 2) * blockSize / 2
 }
 
-function next() {
-    pos += 1
-
-    if (pos >= blockSize) {
-        pos = 0
-        sorted = 0
-        block += 1
-        if (block > data.length / blockSize) {
-            block = 0
-            blockSize *= 2
-        }
-        leftSorted = blockSize / 2
-        lrightSorted = blockSize / 2
-    }
-}
-
 sortLoop = setInterval(() => {
-    if (blockSize > data.length) { return clearInterval(sortLoop) }
-
     let start = block * blockSize
 
-    let leftIndex = start + leftPos
+    let leftIndex = start + leftPos + sorted
     let rightIndex = start + rightPos + blockSize / 2
     
     if (data[leftIndex] > data[rightIndex]) {
         data.splice(leftIndex, 0, data.splice(rightIndex, 1)[0])
 
-        sorted++
         rightPos++
-        leftSorted--
-    } else {
-        //data.splice(leftRight, 0, data.splice(start + sorted, 1)[0])
-
         sorted++
+    } else {
         leftPos++
     }
 
-    if (leftPos >= blockSize / 2 || rightPos >= blockSize / 2) {
-        console.log("hi")
+    if (rightPos >= blockSize / 2 || leftPos >= blockSize / 2) {
         leftPos = 0
         rightPos = 0
         sorted = 0
-        block += 1  
+        block += 1
 
-        if (block > data.length / blockSize) {
+        if (block >= data.length / blockSize) {
+            if (blockSize >= data.length) {
+                done = true
+                return clearInterval(sortLoop)
+            }
             block = 0
             blockSize *= 2
         }
@@ -94,7 +75,7 @@ function draw() {
 
     let start = block * blockSize
 
-    let leftIndex = start + leftPos
+    let leftIndex = start + leftPos + sorted
     let rightIndex = start + rightPos + blockSize / 2
 
     for (let i = 0; i < num; i++) {
@@ -104,17 +85,24 @@ function draw() {
             fill("grey")
         }
         
-        if (i === leftIndex || i === rightIndex) {
+        if (i === leftIndex) {
+            fill("red")
+        }
+        if (i === rightIndex) {
             fill("green")
         }
 
-        rect(i * size, 0, size, data[i])
+        if (done || (i >= start && i < leftIndex)) {
+            fill("yellow")
+        }
+
+        rect(i * size, innerHeight, size, -data[i])
     }
 
-    fill("white")
+    /*fill("black")
     textSize(20)
-    text(`compare: ${compare}`, 10, innerHeight - 30)
-    text(`swap: ${swap}`, 10, innerHeight - 10)
+    text(`blockSize: ${blockSize}`, 10, innerHeight - 30)
+    text(`block: ${block}`, 10, innerHeight - 10)*/
 }
 
 function windowResized() {
