@@ -21,10 +21,6 @@ let rightPos = 0
 let sorted = 0
 let done = 0
 
-function getIndex() {
-    return block * blockSize + Math.floor(pos / 2) + (pos % 2) * blockSize / 2
-}
-
 sortLoop = setInterval(() => {
     let start = block * blockSize
 

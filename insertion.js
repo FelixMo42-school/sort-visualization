@@ -2,9 +2,6 @@ const data = []
 const num = 64
 const delay = 100
 
-let pos = 0
-let unsorted = num
-
 let compare = 0
 let swap = 0
 
@@ -14,20 +11,27 @@ Array.prototype.shuffle = function() {
     }
 }
 
-sortLoop = setInterval(() => {
-    compare += 1
-    if (data[pos] > data[pos + 1]) {
-        [data[pos + 1], data[pos]] = [data[pos], data[pos + 1]]
-        swap += 1
+let pos = 1
+let target = 0
+
+let sortLoop = setInterval(() => {
+    compare++
+    if (data[target] > data[pos]) {
+        data.splice(target, 0, data.splice(pos, 1)[0])
+        swap++
+
+        pos += 1
+        target = 0
+    } else {
+        target ++
+    }
+    
+    if (target === pos) {
+        pos += 1
+        target = 0
     }
 
-    pos++
-    if (pos > unsorted) {
-        pos = 0
-        unsorted--
-    }
-
-    if (unsorted === 0) {
+    if (pos === num) {
         clearInterval(sortLoop)
     }
 }, delay)
@@ -48,14 +52,10 @@ function draw() {
     clear()
 
     for (let i = 0; i < num; i++) {
-        if (i >= unsorted) {
-            fill("gold")
-        } else if (pos === i || pos + 1 === i) {
-            if (data[pos] > data[pos + 1]) {
-                fill("red")
-            } else {
-                fill("green")
-            }
+        if (i === pos) {
+            fill("green")
+        } else if (i === target) {
+            fill("red")
         } else {
             fill("white")
         }
