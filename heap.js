@@ -1,6 +1,7 @@
+const params = (new URL(document.location)).searchParams;
+const num = params.get('length')
+const delay = params.get('delay')
 const data = []
-const num = 64
-const delay = 100
 
 Array.prototype.shuffle = function() {
     for (let i = this.length - 1, r  = Math.floor(Math.random() * i); i > 0; i--, r = Math.floor(Math.random() * i)) {

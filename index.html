@@ -1,9 +1,47 @@
 <!DOCTYPE html>
 <html>
     <body>
-        <a href="./bubble.html">Bubble Sort</a><br>
-        <a href="./radix.html">Radix Sort</a><br>
-        <a href="./insertion.html">Insertion Sort</a><br>
-        <a href="./merge.html">Merge Sort</a>
+        <script>
+            function go() {
+                let algorithm = document.getElementById("algorithm").value
+                let length = document.getElementById("length").value
+                let delay = document.getElementById("delay").value
+
+                if (algorithm === "Bubble Sort") {
+                    window.location.href = `./bubble.html?length=${length}&delay=${delay}`
+                }
+
+                if (algorithm === "Radix Sort") {
+                    window.location.href = `./radix.html?length=${length}&delay=${delay}`
+                }
+
+                if (algorithm === "Insertion Sort") {
+                    window.location.href = `./insertion.html?length=${length}&delay=${delay}`
+                }
+
+                if (algorithm === "Merge Sort") {
+                    window.location.href = `./merge.html?length=${length}&delay=${delay}`
+                }
+
+                if (algorithm === "Heap Sort") {
+                    window.location.href = `./heap.html?length=${length}&delay=${delay}`
+                }
+            }
+        </script>
+
+        <label>Algorithm: </label>
+        <select id="algorithm">
+            <option>Bubble Sort</option>
+            <option>Radix Sort</option>
+            <option>Insertion Sort</option>
+            <option>Merge Sort</option>
+            <option>Heap Sort</option>
+        </select>
+        <br><br>
+        <label>Data length: </label><input id="length" type="number" value="64">
+        <br><br>
+        <label>Delay: </label><input id="delay" type="number" value="100">
+        <br><br>
+        <button onclick="go()">GO</button>
     </body>
 </html>

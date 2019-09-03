@@ -1,6 +1,7 @@
+const params = (new URL(document.location)).searchParams;
+const num = params.get('length')
+const delay = params.get('delay')
 const data = []
-const num = 64
-const delay = 100
 
 let pos = 0
 let unsorted = num
