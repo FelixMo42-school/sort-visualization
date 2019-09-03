@@ -11,6 +11,9 @@ Array.prototype.shuffle = function() {
 let heap = []
 let unsorted = num - 1
 
+let compare = 0
+let swap = 0
+
 for (let i = Math.floor(num / 2); i >= 0; i -= 1) {
     heap.unshift(i)
 }
@@ -24,6 +27,8 @@ sortLoop = setInterval(() => {
         let left = 2 * base + 1
         let right = 2 * base + 2
 
+        compare++
+
         if (left <= unsorted && data[left] > data[max]) {
             max = left
         }
@@ -33,13 +38,20 @@ sortLoop = setInterval(() => {
         }
 
         if (base != max) {
+            swap++
             [data[base], data[max]] = [data[max], data[base]]
             heap.push(max)
         }
     } else {
+        swap++
         [data[0], data[unsorted]] = [data[unsorted], data[0]]
         unsorted--
-        heap.push(0)
+        if (unsorted == 0) {
+            unsorted = -1
+            clearInterval(sortLoop)
+        } else {
+            heap.push(0)
+        }
     }
 }, delay)
 
@@ -65,7 +77,7 @@ function draw() {
     for (let i = 0; i < num; i++) {
         fill("white")
         if ( i == base ) {
-            fill("red")
+            fill("blue")
         }
         if ( i == right || i == left) {
             fill("green")
@@ -77,10 +89,10 @@ function draw() {
         rect(i * size, innerHeight, size, -data[i])
     }
 
-    //fill("black")
-    //textSize(20)
-    //text(`comparison: ${compare}`, 10,  40)
-    //text(`changes: ${swap}`, 10, 20)
+    fill("black")
+    textSize(20)
+    text(`comparison: ${compare}`, 10,  40)
+    text(`changes: ${swap}`, 10, 20)
 }
 
 function windowResized() {
