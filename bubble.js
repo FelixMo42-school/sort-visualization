@@ -1,4 +1,4 @@
-const params = (new URL(document.location)).searchParams;
+const params = (new URL(document.location)).searchParams
 const num = params.get('length')
 const delay = params.get('delay')
 const data = []
