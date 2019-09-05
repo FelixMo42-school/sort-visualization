@@ -14,27 +14,50 @@ Array.prototype.dist = function(target) {
     return Math.sqrt((this[0] - target[0]) ** 2 + (this[1] - target[1]) ** 2)
 }
 
-let open = [{
-    loc: start,
-    cost: 0,
-    dist: start.dist(end),
-    total: start.dist(end)
-}]
-let closed = []
+function astarV1() {
+    let open = new Heap()
 
-sortLoop = setInterval(() => {
-        let current = false
-        for (let node of open) {
-            if (node.total < current.total) {
-                current = node
-            }
-        }
+    function add(pos, prev) {
+        let dist = pos.dist(end)
+        let cost = prev.cost + 1
+
+        open.add({
+            prev: prev,
+            cost: cost,
+            priority: cost + dist
+        })
+    }
+
+    function close(pos) {
+        data[pos[0]][pos[1]] = -1
+    }
+
+    open.add({
+        pos: start,
+        cost: 0,
+        priority: start.dist(end)
+    })
+
+    return () => {
+        let current = open.pull()
+
         if (!current) {
             return clearInterval(sortLoop)
         }
-        data[current.loc[0]][current.loc[1]] = -1
 
-}, delay)
+        close(current.pos)
+
+        for (let x = current.pos[0] - 1; x <= current.pos[0] + 1; x++) {
+            for (let y = current.pos[1] - 1; y <= current.pos[1] + 1; y++) {
+                if ( x > 0 && y > 0 && data[x][y] !== -1 ) {
+                    add([x, y], current)
+                }
+            }
+        }
+    }
+}
+
+sortLoop = setInterval(astarV1(), delay)
 
 function setup() {
     createCanvas(innerWidth, innerHeight)
@@ -57,12 +80,12 @@ function draw() {
             if ( data[x][y] == -1 ) {
                 fill("red")
             }
-            if ( start.loc(x, y) ) {
+            /*if ( start.loc(x, y) ) {
                 fill("yellow")
             }
             if ( end.loc(x, y) ) {
                 fill("green")
-            }
+            }*/
             rect(x * size, y * size, size, size)
         }
     }
