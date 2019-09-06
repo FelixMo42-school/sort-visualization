@@ -15,12 +15,6 @@ Array.prototype.dist = function(target) {
     return Math.sqrt((this[0] - target[0]) ** 2 + (this[1] - target[1]) ** 2)
 }
 
-class Map {
-    constructor({size}) {
-
-    }
-}
-
 class Node {
     constructor({pos, parent=false}) {
         this.pos = pos
@@ -38,6 +32,40 @@ class Node {
         this.priority = this.dist + this.cost
     }
 }
+
+class Node2 {
+    constructor({position}) {
+        this.position = position
+        this.x = position[0]
+        this.y = position[1]
+
+
+    }
+}
+
+class Map {
+    constructor({width, height}) {
+        this.nodes = []
+
+        this.width = width
+        this.height = height
+
+        for (let x = 0; x < this.width; x++) {
+            this.nodes.push([])
+            for (let y = 0; y < this.height; y++) {
+                this.nodes[x].push(new Node({
+                    position: [x, y]
+                }))
+            }
+        }
+    }
+
+    get(position) {
+        return this.nodes[position[0]][position[1]]
+    }
+}
+
+let map = new Map({num, num})
 
 function astarV1() {
     let open = new Heap()
@@ -75,14 +103,62 @@ function astarV1() {
                     x >= 0 && y >= 0 &&
                     x < num && y < num &&
                     !(x == 0 && y == 0) &&
-                    (data[x][y] === 0 || data[x][y] === 2)
+                    data[x][y] >= 0
                 ) {
                     if (end.loc(x, y)) {
                         return colorPath(current)
                     }
 
+                    if (data[x][y] == 1) {
+                        
+                    }
+
                     open.add(new Node({pos: [x, y], parent: current}))
                     data[x][y] = 1
+                }
+            }
+        }
+    }
+}
+
+function astarV2() {
+    let open = new Heap()
+
+    function add(node, previous) {
+        node.previous = previous
+        node.cost = previous.cost + pos.dist(previous.pos)
+
+        if (node.open) {
+            open.update(node)
+        } else {
+            node.open = true
+            node.dist = node.position.dist(end)
+            open.add(node)
+        }
+
+        node.priority = node.cost + node.dist
+    }
+
+    open.add( map.get(start) )
+
+    return () => {
+        let current = open.pull()
+
+        if (!current) {
+            return clearInterval(sortLoop)
+        }
+
+        current.closed = true
+
+        for (let x = current.x - 1; x <= current.x + 1; x++) {
+            for (let y = current.y - 1; y <= current.y + 1; y++) {
+                if (
+                    x >= 0 && y >= 0 &&
+                    x < num && y < num &&
+                    !(x == 0 && y == 0) &&
+                    !map.get([x, y]).closed
+                ) {
+                    add(map.get([x, y]))
                 }
             }
         }
