@@ -1,42 +1,64 @@
 const params = (new URL(document.location)).searchParams
-const num =  10
+const num =  20
 const delay = 100
 const data = []
 
-let start = [0, 0]
-let end = [num - 1, num - 1]
+let offset = 3
+let start = [offset, offset]
+let end = [num - offset - 1, num - offset - 1]
 
 Array.prototype.loc = function(x, y) {
-    return this[0] === x && this[1] === y
+    return this[0] == x && this[1] == y
 }
 
 Array.prototype.dist = function(target) {
     return Math.sqrt((this[0] - target[0]) ** 2 + (this[1] - target[1]) ** 2)
 }
 
+class Map {
+    constructor({size}) {
+
+    }
+}
+
+class Node {
+    constructor({pos, parent=false}) {
+        this.pos = pos
+        this.x = pos[0]
+        this.y = pos[1]
+
+        this.dist = pos.dist(end)
+        this.cost = this.dist
+        if (parent) {
+            this.cost += parent.cost + pos.dist(parent.pos)
+        }
+
+        this.parent = parent
+
+        this.priority = this.dist + this.cost
+    }
+}
+
 function astarV1() {
     let open = new Heap()
 
-    function add(pos, prev) {
-        let dist = pos.dist(end)
-        let cost = prev.cost + 1
-
-        open.add({
-            prev: prev,
-            cost: cost,
-            priority: cost + dist
-        })
+    function close(node) {
+        data[node.x][node.y] = -2
     }
 
-    function close(pos) {
-        data[pos[0]][pos[1]] = -1
+    function colorPath(node) {
+        clearInterval(sortLoop)
+
+        data[node.x][node.y] = 2
+        while (node.parent) {
+            node = node.parent
+            data[node.x][node.y] = 2
+        }
     }
 
-    open.add({
-        pos: start,
-        cost: 0,
-        priority: start.dist(end)
-    })
+    open.add(new Node({
+        pos: start
+    }))
 
     return () => {
         let current = open.pull()
@@ -45,12 +67,22 @@ function astarV1() {
             return clearInterval(sortLoop)
         }
 
-        close(current.pos)
+        close(current)
 
-        for (let x = current.pos[0] - 1; x <= current.pos[0] + 1; x++) {
-            for (let y = current.pos[1] - 1; y <= current.pos[1] + 1; y++) {
-                if ( x > 0 && y > 0 && data[x][y] !== -1 ) {
-                    add([x, y], current)
+        for (let x = current.x - 1; x <= current.x + 1; x++) {
+            for (let y = current.y - 1; y <= current.y + 1; y++) {
+                if (
+                    x >= 0 && y >= 0 &&
+                    x < num && y < num &&
+                    !(x == 0 && y == 0) &&
+                    (data[x][y] === 0 || data[x][y] === 2)
+                ) {
+                    if (end.loc(x, y)) {
+                        return colorPath(current)
+                    }
+
+                    open.add(new Node({pos: [x, y], parent: current}))
+                    data[x][y] = 1
                 }
             }
         }
@@ -76,16 +108,20 @@ function draw() {
 
     for (let x = 0; x < num; x++) {
         for (let y = 0; y < num; y++) {
-            fill("white")
-            if ( data[x][y] == -1 ) {
-                fill("red")
+            fill("grey")
+
+            switch (data[x][y]) {
+                case 2:
+                    fill("pink"); break
+                case -2:
+                    fill("green"); break
+                case -1:
+                    fill("black"); break
+                case 1:
+                    fill("blue"); break
+                default:
+                    fill("grey")
             }
-            /*if ( start.loc(x, y) ) {
-                fill("yellow")
-            }
-            if ( end.loc(x, y) ) {
-                fill("green")
-            }*/
             rect(x * size, y * size, size, size)
         }
     }
