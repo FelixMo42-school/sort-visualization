@@ -1,6 +1,6 @@
 const params = (new URL(document.location)).searchParams
 const num =  20
-const delay = 100
+const delay = 1000
 const data = []
 
 let offset = 3
@@ -16,30 +16,11 @@ Array.prototype.dist = function(target) {
 }
 
 class Node {
-    constructor({pos, parent=false}) {
-        this.pos = pos
-        this.x = pos[0]
-        this.y = pos[1]
-
-        this.dist = pos.dist(end)
-        this.cost = this.dist
-        if (parent) {
-            this.cost += parent.cost + pos.dist(parent.pos)
-        }
-
-        this.parent = parent
-
-        this.priority = this.dist + this.cost
-    }
-}
-
-class Node2 {
     constructor({position}) {
         this.position = position
         this.x = position[0]
         this.y = position[1]
-
-
+        this.walkable = Math.random() > .1
     }
 }
 
@@ -65,68 +46,20 @@ class Map {
     }
 }
 
-let map = new Map({num, num})
-
-function astarV1() {
-    let open = new Heap()
-
-    function close(node) {
-        data[node.x][node.y] = -2
-    }
-
-    function colorPath(node) {
-        clearInterval(sortLoop)
-
-        data[node.x][node.y] = 2
-        while (node.parent) {
-            node = node.parent
-            data[node.x][node.y] = 2
-        }
-    }
-
-    open.add(new Node({
-        pos: start
-    }))
-
-    return () => {
-        let current = open.pull()
-
-        if (!current) {
-            return clearInterval(sortLoop)
-        }
-
-        close(current)
-
-        for (let x = current.x - 1; x <= current.x + 1; x++) {
-            for (let y = current.y - 1; y <= current.y + 1; y++) {
-                if (
-                    x >= 0 && y >= 0 &&
-                    x < num && y < num &&
-                    !(x == 0 && y == 0) &&
-                    data[x][y] >= 0
-                ) {
-                    if (end.loc(x, y)) {
-                        return colorPath(current)
-                    }
-
-                    if (data[x][y] == 1) {
-                        
-                    }
-
-                    open.add(new Node({pos: [x, y], parent: current}))
-                    data[x][y] = 1
-                }
-            }
-        }
-    }
-}
+let map = new Map({width: num, height: num})
+map.get(start).onPath = true
+map.get(end).onPath = true
 
 function astarV2() {
     let open = new Heap()
 
     function add(node, previous) {
+        if (node.open && node.previous.cost < previous.cost) {
+            return
+        }
+
         node.previous = previous
-        node.cost = previous.cost + pos.dist(previous.pos)
+        node.cost = previous.cost + previous.position.dist(node.position)
 
         if (node.open) {
             open.update(node)
@@ -139,9 +72,19 @@ function astarV2() {
         node.priority = node.cost + node.dist
     }
 
+    map.get(start).cost = 0
+    map.get(start).priority = start.dist(end)
     open.add( map.get(start) )
 
+    function colorPath(node) {
+        while ("previous" in node) {
+            node.onPath = true
+            node = node.previous
+        }
+    }
+
     return () => {
+        open.test()
         let current = open.pull()
 
         if (!current) {
@@ -150,22 +93,27 @@ function astarV2() {
 
         current.closed = true
 
+        if ( map.get(end).closed ) {
+            colorPath(map.get(end))
+            return clearInterval(sortLoop)
+        }
+
         for (let x = current.x - 1; x <= current.x + 1; x++) {
             for (let y = current.y - 1; y <= current.y + 1; y++) {
                 if (
                     x >= 0 && y >= 0 &&
-                    x < num && y < num &&
-                    !(x == 0 && y == 0) &&
-                    !map.get([x, y]).closed
+                    x < map.width && y < map.height &&
+                    !map.get([x, y]).closed &&
+                    map.get([x, y]).walkable
                 ) {
-                    add(map.get([x, y]))
+                    add(map.get([x, y]), current)
                 }
             }
         }
     }
 }
 
-sortLoop = setInterval(astarV1(), delay)
+sortLoop = setInterval(astarV2(), delay)
 
 function setup() {
     createCanvas(innerWidth, innerHeight)
@@ -182,23 +130,39 @@ function draw() {
     let size = Math.min(innerHeight, innerWidth) / num
     clear()
 
-    for (let x = 0; x < num; x++) {
-        for (let y = 0; y < num; y++) {
+    for (let x = 0; x < map.width; x++) {
+        for (let y = 0; y < map.height; y++) {
+            let node = map.get([x, y])
             fill("grey")
 
-            switch (data[x][y]) {
-                case 2:
-                    fill("pink"); break
-                case -2:
-                    fill("green"); break
-                case -1:
-                    fill("black"); break
-                case 1:
-                    fill("blue"); break
-                default:
-                    fill("grey")
+            if (node.open) {
+                fill("blue")
             }
+
+            if (node.closed) {
+                fill("green")
+            }
+
+            if (node.onPath) {
+                fill("pink")
+            }
+
+            if (!node.walkable) {
+                fill("black")
+            }
+
             rect(x * size, y * size, size, size)
+
+            fill("black")
+            textAlign(CENTER, CENTER)
+
+            if ("priority" in node) {
+                text(
+                    Math.floor(node.priority * 100),
+                    x * size + size / 2,
+                    y * size + size / 2
+                )
+            }
         }
     }
 }
