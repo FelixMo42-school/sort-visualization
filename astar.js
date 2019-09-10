@@ -1,11 +1,6 @@
 const params = (new URL(document.location)).searchParams
 const num =  20
-<<<<<<< HEAD:sorting/astar.js
-const delay = 1000
-const data = []
-=======
 const delay = 100
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
 
 let offset = 3
 let start = [offset, offset]
@@ -20,20 +15,12 @@ Array.prototype.dist = function(target) {
 }
 
 class Node {
-<<<<<<< HEAD:sorting/astar.js
-    constructor({position}) {
-        this.position = position
-        this.x = position[0]
-        this.y = position[1]
-        this.walkable = Math.random() > .1
-=======
     constructor({position, walkable}) {
         this.position = position
         this.x = position[0]
         this.y = position[1]
 
         this.walkable = walkable
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
     }
 }
 
@@ -61,21 +48,6 @@ class Map {
 }
 
 let map = new Map({width: num, height: num})
-<<<<<<< HEAD:sorting/astar.js
-map.get(start).onPath = true
-map.get(end).onPath = true
-
-function astarV2() {
-    let open = new Heap()
-
-    function add(node, previous) {
-        if (node.open && node.previous.cost < previous.cost) {
-            return
-        }
-
-        node.previous = previous
-        node.cost = previous.cost + previous.position.dist(node.position)
-=======
 map.get(start).walkable = true
 map.get(start).onPath = true
 map.get(end).walkable = true
@@ -102,7 +74,6 @@ function astar() {
         node.cost = previous.cost + node.position.dist(previous.position)
         node.dist = node.position.dist(end)
         node.priority = node.cost + node.dist
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
 
         if (node.open) {
             open.update(node)
@@ -113,11 +84,7 @@ function astar() {
     }
 
     map.get(start).cost = 0
-<<<<<<< HEAD:sorting/astar.js
-    map.get(start).priority = start.dist(end)
-=======
     map.get(start).priority = 0
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
     open.add( map.get(start) )
 
     function colorPath(node) {
@@ -128,12 +95,7 @@ function astar() {
     }
 
     return () => {
-<<<<<<< HEAD:sorting/astar.js
-        open.test()
-        let current = open.pull()
-=======
         let current = open.pop()
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
 
         if (!current) {
             return clearInterval(sortLoop)
@@ -166,11 +128,7 @@ function astar() {
     }
 }
 
-<<<<<<< HEAD:sorting/astar.js
-sortLoop = setInterval(astarV2(), delay)
-=======
 sortLoop = setInterval(astar(), delay)
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
 
 function setup() {
     createCanvas(innerWidth, innerHeight)
@@ -192,29 +150,6 @@ function draw() {
 
             if (node.closed) {
                 fill("green")
-<<<<<<< HEAD:sorting/astar.js
-            }
-
-            if (node.onPath) {
-                fill("pink")
-            }
-
-            if (!node.walkable) {
-                fill("black")
-            }
-
-            rect(x * size, y * size, size, size)
-
-            fill("black")
-            textAlign(CENTER, CENTER)
-
-            if ("priority" in node) {
-                text(
-                    Math.floor(node.priority * 100),
-                    x * size + size / 2,
-                    y * size + size / 2
-                )
-=======
             }
 
             if (node.onPath) {
@@ -231,7 +166,6 @@ function draw() {
                 fill("black")
                 textAlign(CENTER, CENTER)
                 text( Math.floor(node.priority * 100), x * size + size / 2, y * size + size / 2 )
->>>>>>> db1d591ff0abba6f6343afc864b19a57e9774815:astar.js
             }
         }
     }
