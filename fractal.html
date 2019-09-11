@@ -1,0 +1,50 @@
+<head>
+    <title>A*</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            overflow: hidden;
+        }
+    </style>
+    <body>
+        <script>
+            let size = 200
+
+            function setup() {
+                createCanvas(innerWidth, innerHeight)
+            }
+
+            function draw() {
+                clear()
+                noFill()
+                fractal(innerWidth / 2, innerHeight / 2, 200, PI / 4)
+                size += 1
+            }
+
+            function fractal(x, y, s, a) {
+                if (s < 2) { return }
+
+                ellipse(x,y,s)
+
+                m = .5
+
+                fractal(
+                    x + (s * m / 2 + s / 2) * Math.cos(a),
+                    y + (s * m / 2 + s / 2) * Math.sin(a),
+                    s * m,
+                    a - PI / 4
+                )
+
+                a += PI / 6 * 2
+
+                fractal(
+                    x + (s * m / 2 + s / 2) * Math.cos(a),
+                    y + (s * m / 2 + s / 2) * Math.sin(a),
+                    s * m,
+                    a - PI / 4
+                )
+            }
+        </script>
+    </body>
+</head>

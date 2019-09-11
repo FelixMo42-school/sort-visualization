@@ -2,46 +2,34 @@
 <html>
     <body>
         <script>
-            function go() {
+            function algorithmGo() {
                 let algorithm = document.getElementById("algorithm").value
                 let length = document.getElementById("length").value
                 let delay = document.getElementById("delay").value
 
-                if (algorithm === "Bubble Sort") {
-                    window.location.href = `./sorting/bubble.html?length=${length}&delay=${delay}`
-                }
-
-                if (algorithm === "Radix Sort") {
-                    window.location.href = `./sorting/radix.html?length=${length}&delay=${delay}`
-                }
-
-                if (algorithm === "Insertion Sort") {
-                    window.location.href = `./sorting/insertion.html?length=${length}&delay=${delay}`
-                }
-
-                if (algorithm === "Merge Sort") {
-                    window.location.href = `./sorting/merge.html?length=${length}&delay=${delay}`
-                }
-
-                if (algorithm === "Heap Sort") {
-                    window.location.href = `./sorting/heap.html?length=${length}&delay=${delay}`
-                }
+                window.location.href = `./sorting/${algorithm}.html?length=${length}&delay=${delay}`
             }
         </script>
 
         <label>Algorithm: </label>
         <select id="algorithm">
-            <option>Bubble Sort</option>
-            <option>Radix Sort</option>
-            <option>Insertion Sort</option>
-            <option>Merge Sort</option>
-            <option>Heap Sort</option>
+            <option value="bubble">Bubble Sort</option>
+            <option value="radix">Radix Sort</option>
+            <option value="insertion">Insertion Sort</option>
+            <option value="merge">Merge Sort</option>
+            <option value="heap">Heap Sort</option>
         </select>
         <br><br>
         <label>Data length: </label><input id="length" type="number" value="64">
         <br><br>
         <label>Delay: </label><input id="delay" type="number" value="100">
         <br><br>
-        <button onclick="go()">GO</button>
+        <button onclick="algorithmGo()">GO</button>
+
+        <hr/>
+
+        <a href="./recusion.html">Recursion</a>
+
+
     </body>
 </html>
