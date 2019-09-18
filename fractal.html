@@ -1,39 +1,64 @@
 <head>
     <title>fractal</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
     <style>
         body {
             margin: 0px;
             overflow: hidden;
         }
+        
+        canvas {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: -1;    
+        }
     </style>
     <body>
+        <select id="song" onchange="startMusic()">
+            <option>~ choose music ~</option>
+            <option>Another One Bites The Dust</option>
+        </select>
         <script>
             let size = innerWidth
+            let mySound = false
 
             function setup() {
                 createCanvas(innerWidth, innerHeight)
+            }
+
+            function startMusic() {
+                soundFormats('mp3', 'ogg')
+                name = document.getElementById("song").value
+                mySound = loadSound(`./songs/${name}.mp3`, () => {
+                    mySound.play()
+                    amplitude = new p5.Amplitude()
+                })
             }
 
             function draw() {
                 clear()
 
                 translate(innerWidth / 2, innerHeight / 2)
-                //rotate(PI / 4)
                 
                 noFill()
-                stroke("red")
-
-                noStroke()
                 fractal(0, 0, size, PI / 4)
 
                 size += 0
             }
 
             function fractal(x, y, s, a) {
-                if (s < 4) { return }
+                let amp = (mySound && mySound.isPlaying() && amplitude.getLevel() || 0) * (64 - 4) + 4
+                if (s < amp) { return }
 
-                fill(s / size * 255)
+                let rate = mySound && mySound.isPlaying() && mySound.sampleRate() || 0
+                fill(
+                    s / size * (rate * 1) % 255,
+                    s / size * (rate * 2) % 255,
+                    s / size * (rate * 3) % 255
+                )
+
                 ellipse(x,y,s)
 
                 m = .5
@@ -41,25 +66,29 @@
                 fractal(
                     x + (s / 2),
                     y,
-                    s * m
+                    s * m,
+                    a
                 )
 
                 fractal(
                     x,
                     y + (s / 2),
-                    s * m
+                    s * m,
+                    a
                 )
 
                 fractal(
                     x - (s / 2),
                     y,
-                    s * m
+                    s * m,
+                    a
                 )
 
                 fractal(
                     x,
                     y - (s / 2),
-                    s * m
+                    s * m,
+                    a
                 )
             }
         </script>
