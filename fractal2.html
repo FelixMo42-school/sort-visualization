@@ -1,0 +1,75 @@
+<head>
+    <title>fractal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js"></script>
+    <style>
+        body {
+            margin: 0px;
+            overflow: hidden;
+        }
+        
+        canvas {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            z-index: -1;
+        }
+    </style>
+    <body>
+        <select id="song" onchange="start()">
+            <option>~ choose music (may take a bit to load) ~</option>
+            <option>Another One Bites The Dust</option>
+            <option>Queen Bohemian Rhapsody</option>
+            <option>Under Pressure</option>
+        </select>
+        <script>
+            let song
+            let amplitude
+            let samples = 100
+            let amplitudes = []
+
+            function preload() {
+                song = loadSound("songs/Another One Bites The Dust.mp3")
+                amplitude = new p5.Amplitude()
+
+                for (let i = 0; i < samples; i++) {
+                    amplitudes.push(0)
+                }
+            }
+
+            function setup() {
+                createCanvas(innerWidth, innerHeight)
+            }
+
+            function start() {
+                song.play()
+            }
+
+            function draw() {
+                if (!song.isPlaying()) { return }
+
+                clear()
+
+                translate(innerWidth / 2, innerHeight / 2)
+
+                //translate(0, 100)
+
+                //ellipse(0, 0, amplitude.getLevel() * 1000)
+
+                amplitudes.shift()
+                amplitudes.push(amplitude.getLevel())
+
+                beginShape();
+                let p = 0
+                for (let a of amplitudes) {
+                    p += 2 * PI / samples
+                    vertex(
+                        Math.cos(p) * 1000 * (a + .05),
+                        Math.sin(p) * 1000 * (a + .05)
+                    )
+                }
+                endShape()
+            }
+        </script>
+    </body>
+</head>

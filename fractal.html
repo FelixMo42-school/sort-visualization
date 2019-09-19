@@ -12,26 +12,46 @@
             position: fixed;
             top: 0px;
             left: 0px;
-            z-index: -1;    
+            z-index: -1;
         }
     </style>
     <body>
         <select id="song" onchange="startMusic()">
-            <option>~ choose music ~</option>
+            <option>~ choose music (may take a bit to load) ~</option>
             <option>Another One Bites The Dust</option>
+            <option>Queen Bohemian Rhapsody</option>
+            <option>Under Pressure</option>
         </select>
         <script>
             let size = innerWidth
             let mySound = false
+            let rotation = 0
+            let color = [255, 255, 255]
 
             function setup() {
                 createCanvas(innerWidth, innerHeight)
             }
 
+            String.prototype.hashCode = function() {
+                var hash = 0, i, chr;
+                if (this.length === 0) return hash;
+                for (i = 0; i < this.length; i++) {
+                    chr   = this.charCodeAt(i);
+                    hash  = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+                return hash;
+            };
+
             function startMusic() {
                 soundFormats('mp3', 'ogg')
                 name = document.getElementById("song").value
                 mySound = loadSound(`./songs/${name}.mp3`, () => {
+                    color = [
+                        (Math.abs(name.hashCode()) + 147) % 255,
+                        (Math.abs(name.hashCode()) + 147 * 2) % 255,
+                        (Math.abs(name.hashCode()) + 147 * 3) % 255
+                    ]
                     mySound.play()
                     amplitude = new p5.Amplitude()
                 })
@@ -40,8 +60,13 @@
             function draw() {
                 clear()
 
+                noStroke()
+
                 translate(innerWidth / 2, innerHeight / 2)
                 
+                rotation += (mySound && mySound.isPlaying() && amplitude.getLevel() || 0) * PI * deltaTime / 1000
+                rotate(rotation)
+
                 noFill()
                 fractal(0, 0, size, PI / 4)
 
@@ -49,17 +74,17 @@
             }
 
             function fractal(x, y, s, a) {
-                let amp = (mySound && mySound.isPlaying() && amplitude.getLevel() || 0) * (64 - 4) + 4
-                if (s < amp) { return }
+                let amp = (mySound && mySound.isPlaying() && amplitude.getLevel() || 0) * 10
+                if (s < 8) { return }
 
-                let rate = mySound && mySound.isPlaying() && mySound.sampleRate() || 0
+
                 fill(
-                    s / size * (rate * 1) % 255,
-                    s / size * (rate * 2) % 255,
-                    s / size * (rate * 3) % 255
+                    s / size * color[0],
+                    s / size * color[1],
+                    s / size * color[2]
                 )
 
-                ellipse(x,y,s)
+                ellipse(x,y,s + amp)
 
                 m = .5
 
