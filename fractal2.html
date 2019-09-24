@@ -68,34 +68,41 @@
 
                 translate(innerWidth / 2, innerHeight / 2)
 
-                amplitudes.shift()
-                amplitudes.push(amplitude.getLevel())
+                amplitudes.pop()
+                amplitudes.unshift(amplitude.getLevel())
 
-                beginShape()
-                vert(0, 0, i)
-                stroke(
-                    amplitudes[0] * 255,
-                    amplitudes[1] * 255,
-                    amplitudes[2] * 255
-                )
-                endShape()
+                //beginShape()
+                vert(0, 0, i, 0, 0)
+                //endShape()
 
-                i += 1
+                i += 2
             }
 
-            function vert(o=0, a=0, i=0) {
-                let v = amplitudes[i % samples]
+            function lerp(t, a, b) {
+                return a * t + b * (1 - t)
+            }
 
-                vertex(
-                    Math.cos(a) * o * (v + 1),
-                    Math.sin(a) * o * (v + 1)
+            function vert(o=0, a=0, i=0, px, py) {
+                let t = 1 - (i % samples) / samples
+
+                let v = amplitudes[i % samples] //* lerp(t, 1, .5)
+
+                let x = Math.floor( Math.cos(a) * o * (v + 1) )
+                let y = Math.floor( Math.sin(a) * o * (v + 1) )
+
+                stroke(
+                    lerp(t, 000, 255),
+                    lerp(t, 000, 255),
+                    lerp(t, 000, 255)
                 )
+                line(px, py, x, y)
 
                 try {
                     vert(
                         o + .1,
                         a + .005,
-                        i + 1
+                        i + 1,
+                        x, y
                     )
                 } catch (error) { }
             }
