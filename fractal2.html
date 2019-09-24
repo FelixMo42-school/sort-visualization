@@ -25,7 +25,7 @@
         <script>
             let song
             let amplitude
-            let samples = 100
+            let samples = 1000
             let amplitudes = []
 
             function preload() {
@@ -35,6 +35,16 @@
                 for (let i = 0; i < samples; i++) {
                     amplitudes.push(0)
                 }
+
+                function computeMaxCallStackSize() {
+                    try {
+                        return 1 + computeMaxCallStackSize()
+                    } catch (e) {
+                        return 1
+                    }
+                }
+
+                maxCallStackSize = computeMaxCallStackSize() / 2 - 1
             }
 
             function setup() {
@@ -59,16 +69,30 @@
                 amplitudes.shift()
                 amplitudes.push(amplitude.getLevel())
 
-                beginShape();
-                let p = 0
-                for (let a of amplitudes) {
-                    p += 2 * PI / samples
-                    vertex(
-                        Math.cos(p) * 1000 * (a + .05),
-                        Math.sin(p) * 1000 * (a + .05)
-                    )
-                }
+                beginShape()
+                vert()
                 endShape()
+            }
+
+            const dec = .1
+
+            function vert(o=maxCallStackSize * dec, a=0, i=0) {
+                if (i > maxCallStackSize) {
+                    return
+                }
+
+                let v = amplitudes[i % samples]
+
+                vertex(
+                    Math.cos(a) * (o * (v) + o),
+                    Math.sin(a) * (o * (v) + o)
+                )
+
+                vert(
+                    o - dec,
+                    a + .005,
+                    i + 1
+                )
             }
         </script>
     </body>
