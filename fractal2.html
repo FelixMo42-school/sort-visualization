@@ -18,24 +18,19 @@
     <body>
         <select id="song" onchange="start()">
             <option>~ choose music (may take a bit to load) ~</option>
-            <option>Another One Bites The Dust</option>
-            <option>Queen Bohemian Rhapsody</option>
-            <option>Under Pressure</option>
+            <option value="0">Another One Bites The Dust</option>
+            <option value="1">Bohemian Rhapsody</option>
+            <option value="2">Under Pressure</option>
         </select>
         <script>
             let song
             let amplitude
-            let samples = 1000
+            let samples = 1618
             let amplitudes = []
+            let i = 0
+            let color = [0, 0, 0]
 
             function preload() {
-                song = loadSound("songs/Another One Bites The Dust.mp3")
-                amplitude = new p5.Amplitude()
-
-                for (let i = 0; i < samples; i++) {
-                    amplitudes.push(0)
-                }
-
                 function computeMaxCallStackSize() {
                     try {
                         return 1 + computeMaxCallStackSize()
@@ -45,6 +40,18 @@
                 }
 
                 maxCallStackSize = computeMaxCallStackSize() / 2 - 1
+
+                songs = [
+                    loadSound("/songs/Another One Bites The Dust.mp3"),
+                    loadSound("/songs/Bohemian Rhapsody.mp3"),
+                    loadSound("/songs/Under Pressure.mp3")
+                ]
+
+                amplitude = new p5.Amplitude()
+
+                for (let i = 0; i < samples; i++) {
+                    amplitudes.push(0)
+                }
             }
 
             function setup() {
@@ -52,47 +59,45 @@
             }
 
             function start() {
-                song.play()
+                let song = document.getElementById("song").value
+                songs[song].play()
             }
 
             function draw() {
-                if (!song.isPlaying()) { return }
-
                 clear()
 
                 translate(innerWidth / 2, innerHeight / 2)
-
-                //translate(0, 100)
-
-                //ellipse(0, 0, amplitude.getLevel() * 1000)
 
                 amplitudes.shift()
                 amplitudes.push(amplitude.getLevel())
 
                 beginShape()
-                vert()
+                vert(0, 0, i)
+                stroke(
+                    amplitudes[0] * 255,
+                    amplitudes[1] * 255,
+                    amplitudes[2] * 255
+                )
                 endShape()
+
+                i += 1
             }
 
-            const dec = .1
-
-            function vert(o=maxCallStackSize * dec, a=0, i=0) {
-                if (i > maxCallStackSize) {
-                    return
-                }
-
+            function vert(o=0, a=0, i=0) {
                 let v = amplitudes[i % samples]
 
                 vertex(
-                    Math.cos(a) * (o * (v) + o),
-                    Math.sin(a) * (o * (v) + o)
+                    Math.cos(a) * o * (v + 1),
+                    Math.sin(a) * o * (v + 1)
                 )
 
-                vert(
-                    o - dec,
-                    a + .005,
-                    i + 1
-                )
+                try {
+                    vert(
+                        o + .1,
+                        a + .005,
+                        i + 1
+                    )
+                } catch (error) { }
             }
         </script>
     </body>
