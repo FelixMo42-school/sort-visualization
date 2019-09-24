@@ -28,7 +28,23 @@
             let samples = 1618
             let amplitudes = []
             let i = 0
+            let id = 0
             let color = [0, 0, 0]
+
+            String.prototype.hashCode = function() {
+                var hash = 0, i, chr;
+                if (this.length === 0) return hash;
+                for (i = 0; i < this.length; i++) {
+                    chr   = this.charCodeAt(i);
+                    hash  = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+                return hash;
+            }
+
+            Math.lerp = (t, a, b) => {
+                return a * t + b * (1 - t)
+            }
 
             function preload() {
                 function computeMaxCallStackSize() {
@@ -61,6 +77,8 @@
             function start() {
                 let song = document.getElementById("song").value
                 songs[song].play()
+                id = song
+                console.log(id)
             }
 
             function draw() {
@@ -71,29 +89,34 @@
                 amplitudes.pop()
                 amplitudes.unshift(amplitude.getLevel())
 
-                //beginShape()
                 vert(0, 0, i, 0, 0)
-                //endShape()
 
                 i += 2
             }
 
-            function lerp(t, a, b) {
-                return a * t + b * (1 - t)
-            }
-
             function vert(o=0, a=0, i=0, px, py) {
-                let t = 1 - (i % samples) / samples
+                let t = (i % samples) / samples
 
                 let v = amplitudes[i % samples] //* lerp(t, 1, .5)
+                let p = amplitudes[(i - 1) % samples]
 
                 let x = Math.floor( Math.cos(a) * o * (v + 1) )
                 let y = Math.floor( Math.sin(a) * o * (v + 1) )
 
+                let cs = [
+                    id * 100,
+                    v ** (1/2) * 500,
+                    127.5 * (v) ** (1/2) - 127.5
+                ]
+
+                let c1 = id * 100
+                let c2 = v ** (1/2) * 500
+                let c3 = 127.5 * (v) ** (1/2) - 127.5
+
                 stroke(
-                    lerp(t, 000, 255),
-                    lerp(t, 000, 255),
-                    lerp(t, 000, 255)
+                    Math.lerp(t, 200, cs[id]),
+                    Math.lerp(t, 200, cs[(id + 1) % 3]),
+                    Math.lerp(t, 200, cs[(id + 2) % 3])
                 )
                 line(px, py, x, y)
 
