@@ -11,7 +11,15 @@ Array.prototype.loc = function(pos) {
 }
 
 Array.prototype.dist = function(target) {
-    return Math.sqrt((this[0] - target[0]) ** 2 + (this[1] - target[1]) ** 2)
+    let dx = abs(this[0] - target[0])
+    let dy = abs(this[1] - target[1])
+    let D = 1
+    let D2 = 1
+    return D * (dx + dy) + (D2 - 2 * D) * min(dx, dy)
+    // http://theory.stanford.edu/~amitp/GameProgramming/Heuristics.html
+
+    // return Math.abs(this[0] - target[0]) + Math.abs(this[1] - target[1])
+    // return Math.sqrt((this[0] - target[0]) ** 2 + (this[1] - target[1]) ** 2)
 }
 
 class Node {
